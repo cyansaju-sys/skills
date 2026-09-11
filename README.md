@@ -11,12 +11,23 @@ tarea encaja con su descripción, o manualmente con `/<nombre-de-la-skill>`.
 | [`clean-code`](skills/clean-code/SKILL.md) | Genera código nuevo aplicando Clean Code, SOLID, DRY, KISS y YAGNI, y explica cada principio aplicado. | "escríbeme", "crea", "implementa", "genera", "hazme" código |
 | [`migrations`](skills/migrations/SKILL.md) | Migra código entre lenguajes, frameworks o tecnologías (ej. Express → FastAPI, Vue → React), preservando el comportamiento y usando patrones idiomáticos del destino. | "migrar", "portar", "convertir", "reescribir en", "pasar de X a Y" |
 | [`migrations-android`](skills/migrations-android/SKILL.md) | Actualiza apps Android a `targetSdk`/`compileSdk` 36 (Android 16): edge-to-edge, insets, predictive back y cambios de comportamiento obligatorios. Cubre Views (XML) y Jetpack Compose. | "API 36", "Android 16", "edge-to-edge", "insets", "predictive back" |
+| [`security-audit`](skills/security-audit/SKILL.md) | Audita código, configuración y dependencias en busca de vulnerabilidades (OWASP, CWE, MASVS para Android), las prioriza por severidad y aplica correcciones. | "ciberseguridad", "vulnerabilidades", "auditoría de seguridad", "hardening", "secretos expuestos" |
+| [`browser-testing`](skills/browser-testing/SKILL.md) | Prueba apps web en un navegador real (Playwright MCP), reproduce bugs de UI y genera tests E2E automatizados con Playwright. | "prueba en el navegador", "test e2e", "testea la web", "captura de pantalla" |
 Universales
 ### Skills combinadas
 
 `clean-code` y `migrations` están pensadas para usarse juntas: si pides migrar código
 **y** además "código limpio" o "refactoriza mientras migras", `migrations` se encarga del
 mapeo de equivalencias y `clean-code` de la calidad del código resultante.
+
+Otras combinaciones útiles:
+
+- **`security-audit` + `migrations`:** tras migrar, verifica que los controles de seguridad
+  (autenticación, validación, CSRF, CORS) se hayan conservado en el destino.
+- **`browser-testing` + `migrations`:** ejecuta los tests E2E antes y después de migrar un
+  frontend para confirmar que el comportamiento es idéntico.
+- **`browser-testing` + `security-audit`:** confirma en un navegador real las correcciones de
+  XSS, CSRF y control de acceso.
 
 ## Reglas de desarrollo
 
@@ -72,6 +83,17 @@ ln -sfn "$(realpath claude.md)" ~/.claude/CLAUDE.md
 
 > Si ya tienes un `~/.claude/CLAUDE.md`, no lo sobrescribas: copia las reglas dentro de él.
 
+### Acceso al navegador (para `browser-testing`)
+
+La skill `browser-testing` controla un navegador real mediante el servidor MCP de Playwright
+(requiere Node.js):
+
+```bash
+claude mcp add playwright -- npx @playwright/mcp@latest
+```
+
+Sin este servidor, la skill igualmente genera los tests y los ejecuta con `npx playwright test`.
+
 Reinicia la sesión de Claude Code para que detecte las skills y reglas nuevas.
 
 ## Uso
@@ -88,11 +110,15 @@ Reinicia la sesión de Claude Code para que detecte las skills y reglas nuevas.
 ├── claude.md               # reglas de desarrollo para Claude
 ├── setting.json            # configuración de Claude Code (vacía por ahora)
 └── skills/
+    ├── browser-testing/
+    │   └── SKILL.md
     ├── clean-code/
     │   └── SKILL.md
     ├── migrations/
     │   └── SKILL.md
-    └── migrations-android/
+    ├── migrations-android/
+    │   └── SKILL.md
+    └── security-audit/
         └── SKILL.md
 ```
 
