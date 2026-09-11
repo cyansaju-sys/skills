@@ -1,4 +1,4 @@
-# Skills para Claude Code
+# Skills para Agentes de ia
 
 Colección personal de [skills](https://docs.claude.com/en/docs/claude-code/skills) para Claude Code.
 Cada skill es un conjunto de instrucciones que Claude carga automáticamente cuando la
