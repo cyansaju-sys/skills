@@ -1,44 +1,46 @@
 ---
 name: migrations-android
 description: >
-  Migra proyectos Android a targetSdk/compileSdk 36 (Android 16) y configura edge-to-edge
-  (pantalla completa, insets, predictive back). Úsala cuando el usuario mencione "API 36",
-  "Android 16", "targetSdk 36", "edge-to-edge", "edge to edge", "insets", "WindowInsets",
-  "predictive back", "pantalla completa en Android" o pida actualizar la compatibilidad de
-  una app Android con los últimos requisitos de Google Play. Cubre tanto proyectos con Views
-  (XML) como con Jetpack Compose.
+  Migrates Android projects to targetSdk/compileSdk 36 (Android 16) and configures
+  edge-to-edge (full screen, insets, predictive back). Use it when the user mentions
+  "API 36", "Android 16", "targetSdk 36", "edge-to-edge", "edge to edge", "insets",
+  "WindowInsets", "predictive back", "full screen on Android" (Spanish: "pantalla completa
+  en Android") or asks to update an Android app's compatibility with the latest Google Play
+  requirements. Covers both Views (XML) and Jetpack Compose projects.
 ---
 
-# Skill: Migración a Android API 36 (Android 16) y Edge-to-Edge
+# Skill: Migration to Android API 36 (Android 16) and Edge-to-Edge
 
-## Propósito
+## Purpose
 
-Actualizar un proyecto Android para compilar y funcionar correctamente con `targetSdk 36`
-(Android 16), y dejar la UI configurada edge-to-edge de forma robusta (sin overlaps con
-barras de sistema, cutouts o teclado), ya sea en Views o en Compose.
+Update an Android project to compile and work correctly with `targetSdk 36`
+(Android 16), and leave the UI robustly configured edge-to-edge (no overlaps with
+system bars, cutouts, or the keyboard), whether using Views or Compose.
 
----
-
-## Proceso
-
-### 1. Confirmar el punto de partida
-
-Antes de tocar código, identifica:
-
-- `compileSdk` / `targetSdk` actuales (en `build.gradle` o `build.gradle.kts`)
-- Versión de Android Gradle Plugin (AGP) y de Gradle — API 36 requiere **AGP 8.6+** y
-  **Gradle 8.9+** como mínimo razonable; recomienda las últimas estables
-- Si el proyecto usa **Views (XML)**, **Jetpack Compose**, o ambos
-- Si ya llama a `enableEdgeToEdge()` o maneja insets manualmente
-- Si usa `WindowCompat.setDecorFitsSystemWindows`, `android:windowOptOutEdgeToEdgeEnforcement`,
-  o colores fijos de status/navigation bar (señal de que edge-to-edge no está bien manejado)
-
-Si el proyecto no está ni siquiera en `targetSdk 35`, primero valida los cambios de
-Android 15 (edge-to-edge ya forzado ahí con opt-out temporal) antes de saltar a 36.
+Write all explanations in the user's language.
 
 ---
 
-### 2. Actualizar `compileSdk` / `targetSdk`
+## Process
+
+### 1. Confirm the starting point
+
+Before touching code, identify:
+
+- Current `compileSdk` / `targetSdk` (in `build.gradle` or `build.gradle.kts`)
+- Android Gradle Plugin (AGP) and Gradle versions — API 36 requires **AGP 8.6+** and
+  **Gradle 8.9+** as a reasonable minimum; recommend the latest stable versions
+- Whether the project uses **Views (XML)**, **Jetpack Compose**, or both
+- Whether it already calls `enableEdgeToEdge()` or handles insets manually
+- Whether it uses `WindowCompat.setDecorFitsSystemWindows`, `android:windowOptOutEdgeToEdgeEnforcement`,
+  or fixed status/navigation bar colors (a sign that edge-to-edge is not handled properly)
+
+If the project isn't even on `targetSdk 35`, first validate the Android 15 changes
+(edge-to-edge already enforced there with a temporary opt-out) before jumping to 36.
+
+---
+
+### 2. Update `compileSdk` / `targetSdk`
 
 ```kotlin
 // build.gradle.kts (module :app)
@@ -46,63 +48,63 @@ android {
     compileSdk = 36
     defaultConfig {
         targetSdk = 36
-        minSdk = 21 // ajusta según el proyecto; no cambia por esta migración
+        minSdk = 21 // adjust per project; not changed by this migration
     }
 }
 ```
 
-Actualiza también dependencias relevantes a versiones compatibles con API 36:
+Also update relevant dependencies to versions compatible with API 36:
 
 ```kotlin
 implementation("androidx.core:core-ktx:1.15.0")
 implementation("androidx.activity:activity-ktx:1.10.0")       // enableEdgeToEdge()
-implementation("androidx.activity:activity-compose:1.10.0")   // si usa Compose
-implementation("androidx.compose:compose-bom:2025.02.00")     // o BOM más reciente
+implementation("androidx.activity:activity-compose:1.10.0")   // if using Compose
+implementation("androidx.compose:compose-bom:2025.02.00")     // or a newer BOM
 ```
 
-Compila (`./gradlew assembleDebug`) y anota **todos** los errores/warnings de deprecación
-antes de seguir — son la lista real de trabajo pendiente.
+Build (`./gradlew assembleDebug`) and record **all** deprecation errors/warnings
+before continuing — they are the real list of pending work.
 
 ---
 
-### 3. Cambios de comportamiento obligatorios en API 36
+### 3. Mandatory behavior changes in API 36
 
-Estos son forzados por el sistema al declarar `targetSdk 36`, no son opcionales:
+These are enforced by the system when declaring `targetSdk 36`; they are not optional:
 
-| Cambio | Qué deja de funcionar | Acción requerida |
+| Change | What stops working | Required action |
 |---|---|---|
-| **Edge-to-edge sin opt-out** | `android:windowOptOutEdgeToEdgeEnforcement="true"` se ignora en dispositivos Android 16 | Implementar edge-to-edge real (ver sección 4) |
-| **Predictive back por defecto** | `onBackPressed()` y `KeyEvent.KEYCODE_BACK` dejan de dispararse en las animaciones del sistema | Migrar a `OnBackPressedCallback` / `PredictiveBackHandler` (ver sección 5) |
-| **`elegantTextHeight` ignorado** | Fuentes compactas en árabe, tailandés, tamil, etc. ya no se pueden forzar vía este atributo | Verificar layouts de texto en esos idiomas sin depender del atributo |
-| **Orientación/resizability ignorados en pantallas ≥ 600dp sw** | `android:screenOrientation`, `setRequestedOrientation()`, `minAspectRatio`/`maxAspectRatio` no aplican | Diseñar layouts adaptativos; si es imprescindible, opt-out temporal con `PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY` (no disponible desde API 37) |
-| **Full-screen intents restringidos** | Notificaciones full-screen (llamadas, alarmas) requieren permiso explícito | Declarar y solicitar `USE_FULL_SCREEN_INTENT` |
-| **Permisos de salud granulares** | `BODY_SENSORS` ya no cubre lectura de ritmo cardíaco | Migrar a permisos `android.permissions.health.*` (ej. `READ_HEART_RATE`) |
+| **Edge-to-edge without opt-out** | `android:windowOptOutEdgeToEdgeEnforcement="true"` is ignored on Android 16 devices | Implement real edge-to-edge (see section 4) |
+| **Predictive back by default** | `onBackPressed()` and `KeyEvent.KEYCODE_BACK` no longer fire during system animations | Migrate to `OnBackPressedCallback` / `PredictiveBackHandler` (see section 5) |
+| **`elegantTextHeight` ignored** | Compact fonts for Arabic, Thai, Tamil, etc. can no longer be forced via this attribute | Verify text layouts in those languages without relying on the attribute |
+| **Orientation/resizability ignored on screens ≥ 600dp sw** | `android:screenOrientation`, `setRequestedOrientation()`, `minAspectRatio`/`maxAspectRatio` don't apply | Design adaptive layouts; if unavoidable, temporary opt-out with `PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY` (unavailable from API 37) |
+| **Full-screen intents restricted** | Full-screen notifications (calls, alarms) require explicit permission | Declare and request `USE_FULL_SCREEN_INTENT` |
+| **Granular health permissions** | `BODY_SENSORS` no longer covers heart-rate reading | Migrate to `android.permissions.health.*` permissions (e.g., `READ_HEART_RATE`) |
 
-Si el usuario solo pidió edge-to-edge, menciona brevemente los demás cambios como
-checklist adicional, pero no los implementes salvo que los pida.
+If the user only asked for edge-to-edge, briefly mention the other changes as an
+additional checklist, but don't implement them unless asked.
 
 ---
 
-### 4. Configurar Edge-to-Edge
+### 4. Configure Edge-to-Edge
 
 #### 4.1 Views (XML)
 
-**Opción recomendada — `enableEdgeToEdge()`:**
+**Recommended option — `enableEdgeToEdge()`:**
 
 ```kotlin
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge() // antes de super.onCreate()
+        enableEdgeToEdge() // before super.onCreate()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 }
 ```
 
-Esto reemplaza ~100 líneas de compatibilidad manual (transparencia de barras, contraste,
-iconos claros/oscuros según tema) y funciona en versiones anteriores a 36 también.
+This replaces ~100 lines of manual compatibility code (bar transparency, contrast,
+light/dark icons per theme) and also works on versions below 36.
 
-**Manejo manual (si no se puede usar la función anterior):**
+**Manual handling (if the function above can't be used):**
 
 ```kotlin
 WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -118,7 +120,7 @@ WindowCompat.setDecorFitsSystemWindows(window, false)
 </style>
 ```
 
-**Aplicar insets para que el contenido no quede tapado por las barras:**
+**Apply insets so content isn't covered by the bars:**
 
 ```kotlin
 ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
@@ -128,10 +130,10 @@ ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, inset
 }
 ```
 
-Usa `WindowInsetsCompat.Type.ime()` en vez de `systemBars()` para el teclado, y
-`displayCutout()` para notch/cutouts. Aplica el inset al contenedor correcto (raíz o
-solo a los elementos que realmente colisionan con la barra), no siempre a la raíz entera,
-para no perder el efecto edge-to-edge (fondo detrás de las barras).
+Use `WindowInsetsCompat.Type.ime()` instead of `systemBars()` for the keyboard, and
+`displayCutout()` for notches/cutouts. Apply the inset to the right container (the root,
+or only the elements that actually collide with the bar), not always the entire root,
+so you don't lose the edge-to-edge effect (background behind the bars).
 
 #### 4.2 Jetpack Compose
 
@@ -153,30 +155,30 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
-- `WindowInsets.safeDrawing` cubre barras de sistema + cutout; usa
-  `WindowInsets.safeGestures` si necesitas también respetar zonas de gestos.
-- Para IME, aplica `.imePadding()` o `WindowInsets.ime` en el composable que lo necesite
-  (típicamente un campo de texto o un `Column` con scroll), no en toda la pantalla.
-- Evita `Modifier.statusBarsPadding()` combinado con `Scaffold` insets al mismo tiempo:
-  duplica el padding.
+- `WindowInsets.safeDrawing` covers system bars + cutout; use
+  `WindowInsets.safeGestures` if you also need to respect gesture areas.
+- For the IME, apply `.imePadding()` or `WindowInsets.ime` on the composable that needs it
+  (typically a text field or a scrollable `Column`), not on the whole screen.
+- Avoid combining `Modifier.statusBarsPadding()` with `Scaffold` insets at the same time:
+  it doubles the padding.
 
-#### 4.3 Colores de iconos de las barras (claro/oscuro)
+#### 4.3 Bar icon colors (light/dark)
 
 ```kotlin
 val controller = WindowCompat.getInsetsController(window, window.decorView)
-controller.isAppearanceLightStatusBars = true   // iconos oscuros sobre fondo claro
+controller.isAppearanceLightStatusBars = true   // dark icons on a light background
 controller.isAppearanceLightNavigationBars = true
 ```
 
-`enableEdgeToEdge()` ya ajusta esto automáticamente según el tema si le pasas
-`SystemBarStyle.auto(...)`; solo hazlo manual si necesitas un comportamiento distinto
-al del tema del sistema.
+`enableEdgeToEdge()` already adjusts this automatically based on the theme if you pass
+`SystemBarStyle.auto(...)`; only do it manually if you need behavior different from
+the system theme.
 
 ---
 
-### 5. Migrar Predictive Back (si aplica)
+### 5. Migrate Predictive Back (if applicable)
 
-Requisito del manifest:
+Manifest requirement:
 
 ```xml
 <application android:enableOnBackInvokedCallback="true">
@@ -186,9 +188,9 @@ Requisito del manifest:
 
 ```kotlin
 onBackPressedDispatcher.addCallback(this) {
-    // lógica de back personalizada
+    // custom back logic
     if (shouldHandleCustomBack) {
-        // manejar
+        // handle
     } else {
         isEnabled = false
         onBackPressedDispatcher.onBackPressed()
@@ -201,44 +203,43 @@ onBackPressedDispatcher.addCallback(this) {
 ```kotlin
 PredictiveBackHandler(enabled = canGoBack) { progress ->
     try {
-        progress.collect { backEvent -> /* progreso de la animación */ }
-        // gesto completado
+        progress.collect { backEvent -> /* animation progress */ }
+        // gesture completed
     } catch (e: CancellationException) {
-        // gesto cancelado por el usuario
+        // gesture cancelled by the user
     }
 }
 ```
 
-No dejes lógica crítica solo en `onBackPressed()`: en apps con `targetSdk 36` corriendo en
-Android 16+, ese callback **no se invoca** durante las animaciones predictivas del sistema.
+Don't leave critical logic only in `onBackPressed()`: in apps with `targetSdk 36` running on
+Android 16+, that callback **is not invoked** during the system's predictive animations.
 
 ---
 
-## Checklist de verificación
+## Verification Checklist
 
-- [ ] `compileSdk`/`targetSdk = 36`, AGP y Gradle actualizados, proyecto compila sin errores
-- [ ] `enableEdgeToEdge()` (o el setup manual equivalente) llamado en cada Activity relevante
-- [ ] Ningún elemento crítico de la UI queda tapado por status bar, navigation bar, cutout o teclado
-- [ ] Colores de iconos de barras correctos en tema claro y oscuro
-- [ ] `android:windowOptOutEdgeToEdgeEnforcement` eliminado del proyecto
-- [ ] Navegación "atrás" migrada a `OnBackPressedCallback` / `PredictiveBackHandler`, probada con el gesto predictivo real (no solo el botón atrás)
-- [ ] Notificaciones full-screen (si existen) declaran `USE_FULL_SCREEN_INTENT`
-- [ ] Layouts revisados en tablets/pantallas grandes (sw ≥ 600dp) sin depender de restricciones de orientación forzadas
+- [ ] `compileSdk`/`targetSdk = 36`, AGP and Gradle updated, project builds without errors
+- [ ] `enableEdgeToEdge()` (or the equivalent manual setup) called in every relevant Activity
+- [ ] No critical UI element is covered by the status bar, navigation bar, cutout, or keyboard
+- [ ] Bar icon colors correct in both light and dark themes
+- [ ] `android:windowOptOutEdgeToEdgeEnforcement` removed from the project
+- [ ] Back navigation migrated to `OnBackPressedCallback` / `PredictiveBackHandler`, tested with the real predictive gesture (not just the back button)
+- [ ] Full-screen notifications (if any) declare `USE_FULL_SCREEN_INTENT`
+- [ ] Layouts reviewed on tablets/large screens (sw ≥ 600dp) without relying on forced orientation restrictions
 
-**Probar en:** un dispositivo/emulador con Android 16 (API 36), en modo claro y oscuro,
-con gestos de navegación activados, y en al menos una pantalla con contenido scrollable
-y un campo de texto (para validar el inset del teclado).
+**Test on:** a device/emulator running Android 16 (API 36), in light and dark mode,
+with gesture navigation enabled, and on at least one screen with scrollable content
+and a text field (to validate the keyboard inset).
 
 ---
 
-## Notas
+## Notes
 
-- Si el proyecto mezcla Views y Compose (interop), aplica insets en el punto de entrada
-  de cada uno por separado — no asumas que el padding de Compose cubre las vistas XML embebidas o viceversa.
-- Si el usuario pide "solo edge-to-edge" sin mencionar API 36, puedes aplicar la sección 4
-  igual (es compatible hacia atrás), pero aclara que la aplicación **forzada** sin opt-out
-  solo ocurre al llegar a `targetSdk 36`.
-- Los detalles exactos de comportamiento pueden variar entre Developer Preview y la versión
-  estable de Android 16; si el proyecto usa una preview, valida contra las release notes
-  oficiales vigentes en el momento de la migración.
-</content>
+- If the project mixes Views and Compose (interop), apply insets at each one's entry point
+  separately — don't assume Compose padding covers embedded XML views or vice versa.
+- If the user asks for "just edge-to-edge" without mentioning API 36, you can still apply
+  section 4 (it's backward compatible), but clarify that **enforcement** without opt-out
+  only happens once reaching `targetSdk 36`.
+- Exact behavior details may vary between the Developer Preview and the stable release
+  of Android 16; if the project uses a preview, validate against the official release notes
+  current at the time of the migration.

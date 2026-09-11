@@ -1,193 +1,197 @@
 ---
 name: migrations
 description: >
-  Migra código, módulos, aplicaciones completas o secciones específicas de cualquier
-  tecnología, framework o lenguaje de programación a otro. Úsala siempre que el usuario
-  mencione palabras como "migrar", "portar", "convertir", "reescribir en", "pasar de X a Y",
-  "traducir código" o cualquier variante. Aplica tanto a migraciones pequeñas (una función,
-  un componente) como grandes (toda una aplicación). Siempre usa archivos del proyecto como
-  ejemplos concretos para generar código idiomático en el destino.
+  Migrates code, modules, entire applications, or specific sections from any technology,
+  framework, or programming language to another. Use it whenever the user mentions words
+  like "migrate", "port", "convert", "rewrite in", "move from X to Y", "translate code"
+  (Spanish: "migrar", "portar", "convertir", "reescribir en", "pasar de X a Y",
+  "traducir código") or any variant. Applies to both small migrations (a function, a
+  component) and large ones (an entire application). Always use project files as concrete
+  examples to generate idiomatic code in the target.
 ---
 
-# Skill: Generador de Migraciones
+# Skill: Migration Generator
 
-## Propósito
+## Purpose
 
-Migrar código fuente de una tecnología origen a una tecnología destino, preservando el
-comportamiento, adaptando los patrones al estilo idiomático del destino, y explicando
-cada decisión de traducción relevante.
+Migrate source code from a source technology to a target technology, preserving
+behavior, adapting patterns to the target's idiomatic style, and explaining
+every relevant translation decision.
 
----
-
-## Proceso
-
-### 1. Entender el Contexto de la Migración
-
-Antes de generar cualquier código, identifica con certeza:
-
-**Sobre el origen:**
-- Tecnología / framework / lenguaje (ej: Express.js, Django, Laravel, Rails)
-- Versión si es relevante (ej: React 16 vs React 18)
-- Patrones usados (ej: clases, hooks, MVC, repositorios)
-- Archivos concretos a migrar (rutas, nombres)
-
-**Sobre el destino:**
-- Tecnología / framework / lenguaje objetivo
-- Versión objetivo si aplica
-- Convenciones idiomáticas del destino (ej: FastAPI usa async por defecto, Go usa interfaces implícitas)
-
-**Sobre el alcance:**
-- ¿Es una función, un módulo, un servicio, o la aplicación completa?
-- ¿Hay dependencias externas que también deben migrarse o reemplazarse?
-- ¿Debe mantenerse la misma estructura de archivos o puede reorganizarse?
-
-Si alguno de estos puntos no está claro y no se puede inferir del código, haz **una sola
-pregunta** antes de continuar.
+Write all explanation sections in the user's language.
 
 ---
 
-### 2. Analizar el Código Origen
+## Process
 
-Antes de traducir, lee y comprende el código fuente:
+### 1. Understand the Migration Context
 
-- Identifica qué hace cada pieza (comportamiento, no solo sintaxis)
-- Detecta patrones de diseño usados (singleton, factory, repository, etc.)
-- Marca dependencias externas que necesitan equivalente en el destino
-- Identifica código que no tiene traducción directa (requiere refactor)
+Before generating any code, identify with certainty:
 
-**Regla clave:** migrar es traducir comportamiento, no sintaxis. El código destino debe
-hacer lo mismo, pero verse como si hubiera sido escrito originalmente en esa tecnología.
+**About the source:**
+- Technology / framework / language (e.g., Express.js, Django, Laravel, Rails)
+- Version if relevant (e.g., React 16 vs. React 18)
+- Patterns used (e.g., classes, hooks, MVC, repositories)
+- Concrete files to migrate (paths, names)
 
----
+**About the target:**
+- Target technology / framework / language
+- Target version if applicable
+- Idiomatic conventions of the target (e.g., FastAPI is async by default, Go uses implicit interfaces)
 
-### 3. Mapear Equivalencias
+**About the scope:**
+- Is it a function, a module, a service, or the entire application?
+- Are there external dependencies that also need to be migrated or replaced?
+- Must the same file structure be kept, or can it be reorganized?
 
-Antes de escribir, construye mentalmente (o explícitamente si es complejo) el mapa:
-
-| Origen | Destino | Notas |
-|--------|---------|-------|
-| `express.Router()` | `APIRouter()` de FastAPI | Misma idea, distinta sintaxis |
-| `middleware` con `next()` | `Depends()` en FastAPI | Diferente paradigma |
-| `req.body` | parámetro con `Body(...)` | Validación explícita en destino |
-| `npm install X` | `pip install Y` | Encontrar equivalente, no solo copiar nombre |
-
-Incluye este mapa en el output si tiene 3 o más equivalencias no triviales.
+If any of these points is unclear and cannot be inferred from the code, ask **a single
+question** before continuing.
 
 ---
 
-### 4. Generar el Código Migrado
+### 2. Analyze the Source Code
 
-Escribe el código destino siguiendo estas reglas:
+Before translating, read and understand the source code:
 
-**Idiomático primero:** usa los patrones, convenciones y herramientas estándar del
-destino. No transliteres: si el origen usa callbacks y el destino usa async/await,
-usa async/await.
+- Identify what each piece does (behavior, not just syntax)
+- Detect design patterns used (singleton, factory, repository, etc.)
+- Flag external dependencies that need an equivalent in the target
+- Identify code with no direct translation (requires refactoring)
 
-**Misma lógica de negocio:** el comportamiento debe ser idéntico. Si hay diferencias
-inevitables, documéntalas explícitamente.
+**Key rule:** migrating means translating behavior, not syntax. The target code must
+do the same thing, but look as if it had originally been written in that technology.
 
-**Estructura de archivos:** sugiere la estructura de archivos equivalente en el destino
-si difiere del origen. Ejemplo:
+---
+
+### 3. Map Equivalences
+
+Before writing, build the map mentally (or explicitly if complex):
+
+| Source | Target | Notes |
+|--------|--------|-------|
+| `express.Router()` | FastAPI `APIRouter()` | Same idea, different syntax |
+| `middleware` with `next()` | `Depends()` in FastAPI | Different paradigm |
+| `req.body` | parameter with `Body(...)` | Explicit validation in target |
+| `npm install X` | `pip install Y` | Find the equivalent, don't just copy the name |
+
+Include this map in the output if it has 3 or more non-trivial equivalences.
+
+---
+
+### 4. Generate the Migrated Code
+
+Write the target code following these rules:
+
+**Idiomatic first:** use the target's standard patterns, conventions, and tools.
+Don't transliterate: if the source uses callbacks and the target uses async/await,
+use async/await.
+
+**Same business logic:** behavior must be identical. If there are unavoidable
+differences, document them explicitly.
+
+**File structure:** suggest the equivalent file structure in the target
+if it differs from the source. Example:
 
 ```
-Origen (Express):          Destino (FastAPI):
+Source (Express):          Target (FastAPI):
 src/
   routes/users.js    →     routers/users.py
   models/User.js     →     models/user.py
   middleware/auth.js →     dependencies/auth.py
 ```
 
-**Dependencias:** lista los paquetes/librerías necesarios en el destino con el comando
-de instalación exacto.
+**Dependencies:** list the packages/libraries needed in the target with the exact
+install command.
 
 ---
 
-### 5. Explicar las Decisiones de Migración
+### 5. Explain the Migration Decisions
 
-Después del código, incluye una sección **"Decisiones de migración"** que explique:
+After the code, include a **"Migration Decisions"** section explaining:
 
-- Equivalencias no obvias (¿por qué `X` se convirtió en `Y`?)
-- Cambios de paradigma (callbacks → promesas, herencia → composición, etc.)
-- Funcionalidad que no existe en el destino y cómo se suplió
-- Diferencias de comportamiento inevitables (si las hay)
-- Lo que se mejoró aprovechando las fortalezas del destino
+- Non-obvious equivalences (why did `X` become `Y`?)
+- Paradigm shifts (callbacks → promises, inheritance → composition, etc.)
+- Functionality missing in the target and how it was replaced
+- Unavoidable behavior differences (if any)
+- What was improved by leveraging the target's strengths
 
-**Formato:**
+**Format:**
 
 ```
-### Decisiones de migración
+### Migration Decisions
 
-**1. [Concepto origen] → [Concepto destino]**
-→ [Explicación de por qué y cómo se hizo la traducción]
+**1. [Source concept] → [Target concept]**
+→ [Explanation of why and how the translation was done]
 
-**2. [Dependencia X] reemplazada por [Dependencia Y]**
-→ [Razón del reemplazo y diferencias de comportamiento si las hay]
+**2. [Dependency X] replaced by [Dependency Y]**
+→ [Reason for the replacement and behavior differences, if any]
 ```
 
 ---
 
-### 6. Verificación y Pasos Siguientes
+### 6. Verification and Next Steps
 
-Al final de cada migración, incluye:
+At the end of every migration, include:
 
-**Checklist de verificación:**
-- [ ] Comportamiento idéntico al original en los casos principales
-- [ ] Casos borde manejados (errores, valores nulos, timeouts)
-- [ ] Dependencias listadas con versiones
-- [ ] Variables de entorno / configuración equivalentes documentadas
+**Verification checklist:**
+- [ ] Behavior identical to the original in the main cases
+- [ ] Edge cases handled (errors, null values, timeouts)
+- [ ] Dependencies listed with versions
+- [ ] Equivalent environment variables / configuration documented
 
-**Pasos para ejecutar:**
-Proporciona los comandos exactos para instalar dependencias y ejecutar el código migrado:
+**Steps to run:**
+Provide the exact commands to install dependencies and run the migrated code:
 
 ```bash
-# Ejemplo para destino Python/FastAPI
+# Example for a Python/FastAPI target
 pip install fastapi uvicorn
 uvicorn main:app --reload
 ```
 
-**Qué probar primero:** sugiere 2-3 casos de prueba manuales o unitarios para
-verificar que la migración es correcta.
+**What to test first:** suggest 2-3 manual or unit test cases to
+verify the migration is correct.
 
 ---
 
-## Tipos de Migración Comunes
+## Common Migration Types
 
-### Framework web completo (ej: Express → FastAPI)
-- Migrar rutas, middleware, modelos, configuración y entrypoint
-- Reorganizar estructura de archivos si es necesario
-- Reemplazar ecosistema de paquetes (npm → pip, etc.)
+### Full web framework (e.g., Express → FastAPI)
+- Migrate routes, middleware, models, configuration, and entrypoint
+- Reorganize the file structure if needed
+- Replace the package ecosystem (npm → pip, etc.)
 
-### Componente UI (ej: Vue → React, React clase → hooks)
-- Preservar props, eventos y estado
-- Adaptar ciclo de vida al equivalente del destino
-- Mantener la misma API pública del componente
+### UI component (e.g., Vue → React, React class → hooks)
+- Preserve props, events, and state
+- Adapt the lifecycle to the target's equivalent
+- Keep the same public API for the component
 
-### Acceso a datos (ej: Sequelize → SQLAlchemy, Mongoose → Motor)
-- Traducir modelos y esquemas
-- Adaptar queries al ORM/ODM destino
-- Verificar comportamiento de transacciones y relaciones
+### Data access (e.g., Sequelize → SQLAlchemy, Mongoose → Motor)
+- Translate models and schemas
+- Adapt queries to the target ORM/ODM
+- Verify transaction and relationship behavior
 
-### Script / utilidad (ej: Bash → Python, JS → Go)
-- Preservar inputs/outputs exactos (stdin/stdout, archivos, exit codes)
-- Adaptar manejo de errores al idioma del destino
+### Script / utility (e.g., Bash → Python, JS → Go)
+- Preserve exact inputs/outputs (stdin/stdout, files, exit codes)
+- Adapt error handling to the target's idioms
 
 ---
 
-## Notas
+## Notes
 
-- Si el usuario proporciona rutas de archivos (`@/ruta`), léelos antes de generar código.
-- Si la migración es grande (> 5 archivos), propón un plan por fases antes de empezar.
-- Si hay partes que no deben migrarse (ej: base de datos, infraestructura), menciónalo.
-- Prefiere claridad sobre brevedad: es mejor un código migrado más verboso pero correcto
-  que uno compacto que oculta diferencias de comportamiento.
+- If the user provides file paths (`@path`), read them before generating code.
+- If the migration is large (> 5 files), propose a phased plan before starting.
+- If there are parts that should not be migrated (e.g., database, infrastructure), say so.
+- Prefer clarity over brevity: verbose but correct migrated code is better
+  than compact code that hides behavior differences.
 
-## Integración con clean-code
+## Integration with clean-code
 
-Si el usuario pide explícitamente "código limpio", "no copies la lógica", "refactoriza
-mientras migras" o similar, **aplica también la skill `clean-code`**:
+If the user explicitly asks for "clean code", "don't copy the logic", "refactor while
+migrating" (Spanish: "código limpio", "no copies la lógica", "refactoriza mientras
+migras") or similar, **also apply the `clean-code` skill**:
 
-- No transliteres la lógica original: reescríbela con los principios de Clean Code
-- Aprovecha la migración para mejorar nombres, reducir funciones largas, eliminar
-  duplicación y aplicar SOLID en el destino
-- En la sección "Decisiones de migración", incluye también los principios de Clean Code
-  aplicados (igual que haría la skill `clean-code` en su sección "Principios aplicados")
+- Don't transliterate the original logic: rewrite it using Clean Code principles
+- Use the migration to improve names, shorten long functions, remove
+  duplication, and apply SOLID in the target
+- In the "Migration Decisions" section, also include the Clean Code principles
+  applied (just as the `clean-code` skill does in its "Applied Principles" section)

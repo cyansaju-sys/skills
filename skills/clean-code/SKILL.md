@@ -1,158 +1,160 @@
 ---
 name: clean-code
 description: >
-  Genera código limpio desde cero siguiendo principios de Clean Code (Robert C. Martin),
-  SOLID, DRY, KISS y YAGNI para cualquier lenguaje de programación. Úsala siempre que
-  el usuario pida escribir código nuevo, implementar una función, clase, módulo, o
-  cualquier pieza de software — incluso si no menciona explícitamente "código limpio".
-  Esta skill también aplica cuando el usuario dice "escríbeme", "crea", "implementa",
-  "genera" o "hazme" algo relacionado con código. Siempre explica en detalle cada
-  principio de código limpio aplicado en la solución.
+  Generates clean code from scratch following Clean Code (Robert C. Martin), SOLID, DRY,
+  KISS, and YAGNI principles for any programming language. Use it whenever the user asks
+  to write new code or implement a function, class, module, or any piece of software —
+  even if they don't explicitly mention "clean code" / "código limpio". Also applies when
+  the user says "write", "create", "implement", "generate", "make me" (Spanish: "escríbeme",
+  "crea", "implementa", "genera", "hazme") something code-related. Always explain in
+  detail each clean-code principle applied in the solution.
 ---
 
-# Skill: Generador de Código Limpio
+# Skill: Clean Code Generator
 
-## Propósito
+## Purpose
 
-Generar código nuevo desde cero aplicando principios de código limpio, con explicaciones
-detalladas de cada decisión de diseño tomada.
+Generate new code from scratch applying clean-code principles, with detailed explanations
+of every design decision made.
 
----
-
-## Proceso de Generación
-
-### 1. Entender el Requerimiento
-
-Antes de escribir código, identifica:
-
-- **¿Qué hace?** — el comportamiento esperado
-- **¿Quién lo usa?** — llamadores internos, API pública, CLI, etc.
-- **¿Qué lenguaje?** — si no se especifica, elige el más adecuado al contexto y justifícalo
-- **¿Qué restricciones hay?** — rendimiento, dependencias, estilo del proyecto
-
-Si el requerimiento es ambiguo y no puedes inferir la respuesta de forma razonable, haz
-**una sola pregunta** antes de continuar.
+Write all explanation sections in the user's language.
 
 ---
 
-### 2. Diseñar Antes de Escribir
+## Generation Process
 
-Piensa brevemente en:
+### 1. Understand the Requirement
 
-- Nombres de funciones, clases y variables
-- Responsabilidades (¿qué hace cada pieza?)
-- Dependencias y cómo inyectarlas
-- Casos borde relevantes
+Before writing code, identify:
 
----
+- **What does it do?** — the expected behavior
+- **Who uses it?** — internal callers, public API, CLI, etc.
+- **Which language?** — if not specified, choose the most suitable one for the context and justify it
+- **What constraints exist?** — performance, dependencies, project style
 
-### 3. Escribir el Código
-
-Aplica **todos** los principios del catálogo de abajo. El código debe ser:
-
-- Legible sin comentarios de "explicación"
-- Probablemente correcto en los casos borde obvios
-- Coherente en estilo con el lenguaje elegido (idiomático)
+If the requirement is ambiguous and you cannot reasonably infer the answer, ask
+**a single question** before continuing.
 
 ---
 
-### 4. Explicar en Detalle
+### 2. Design Before Writing
 
-Después del código, incluye una sección **"Principios aplicados"** con:
+Briefly think about:
 
-- El nombre del principio
-- Una frase de qué es
-- Dónde y cómo se aplicó en el código específico
-
-Usa el formato de la sección de "Plantilla de Explicación" al final de este archivo.
+- Names of functions, classes, and variables
+- Responsibilities (what does each piece do?)
+- Dependencies and how to inject them
+- Relevant edge cases
 
 ---
 
-## Catálogo de Principios
+### 3. Write the Code
 
-### Nomenclatura
+Apply **all** the principles from the catalog below. The code must be:
 
-| Regla | Descripción |
+- Readable without "explanatory" comments
+- Demonstrably correct for the obvious edge cases
+- Stylistically consistent with the chosen language (idiomatic)
+
+---
+
+### 4. Explain in Detail
+
+After the code, include an **"Applied Principles"** section with:
+
+- The principle's name
+- A one-sentence definition
+- Where and how it was applied in the specific code
+
+Use the format from the "Explanation Template" section at the end of this file.
+
+---
+
+## Principles Catalog
+
+### Naming
+
+| Rule | Description |
 |---|---|
-| Nombres que revelan intención | El nombre debe responder: ¿qué es? ¿para qué sirve? ¿cómo se usa? |
-| Sin abreviaciones crípticas | `usr` → `user`, `calc` → `calculate`, `tmp` → `temporaryResult` |
-| Nombres pronunciables | Facilita la comunicación en revisiones de código |
-| Nombres buscables | Evita constantes mágicas sin nombre (`86400` → `SECONDS_PER_DAY`) |
-| Distinguir conceptos | No usar `data`, `info`, `manager` sin calificador |
-| Verbos para funciones | `getUserById()`, `calculateTotal()`, `isValid()` |
-| Sustantivos para clases | `UserRepository`, `OrderProcessor`, `EmailValidator` |
+| Intention-revealing names | The name must answer: what is it? what is it for? how is it used? |
+| No cryptic abbreviations | `usr` → `user`, `calc` → `calculate`, `tmp` → `temporaryResult` |
+| Pronounceable names | Eases communication during code reviews |
+| Searchable names | Avoid unnamed magic constants (`86400` → `SECONDS_PER_DAY`) |
+| Distinguish concepts | Don't use `data`, `info`, `manager` without a qualifier |
+| Verbs for functions | `getUserById()`, `calculateTotal()`, `isValid()` |
+| Nouns for classes | `UserRepository`, `OrderProcessor`, `EmailValidator` |
 
-### Funciones
+### Functions
 
-| Regla | Descripción |
+| Rule | Description |
 |---|---|
-| Hacer una sola cosa | Una función = una responsabilidad. Si necesita "y", es dos funciones |
-| Pequeñas | Idealmente < 20 líneas; si crece, extraer subfunciones |
-| Un nivel de abstracción | No mezclar lógica de negocio con detalles de implementación en la misma función |
-| Sin efectos secundarios ocultos | La función solo hace lo que su nombre promete |
-| Parámetros mínimos | 0-2 ideal, 3 aceptable, más → usar objeto de configuración |
-| No usar flags como parámetro | `processUser(user, true)` → dos funciones separadas |
-| Retornar temprano (Guard Clauses) | Validar y salir antes de la lógica principal |
+| Do one thing | One function = one responsibility. If it needs "and", it's two functions |
+| Small | Ideally < 20 lines; if it grows, extract subfunctions |
+| One level of abstraction | Don't mix business logic with implementation details in the same function |
+| No hidden side effects | The function does only what its name promises |
+| Minimal parameters | 0-2 ideal, 3 acceptable, more → use a configuration object |
+| No flag arguments | `processUser(user, true)` → two separate functions |
+| Return early (Guard Clauses) | Validate and exit before the main logic |
 
-### Clases y Módulos
+### Classes and Modules
 
-| Regla | Descripción |
+| Rule | Description |
 |---|---|
-| Single Responsibility (SRP) | Una clase = una razón para cambiar |
-| Open/Closed (OCP) | Abierta para extensión, cerrada para modificación |
-| Liskov Substitution (LSP) | Las subclases deben poder reemplazar a las superclases |
-| Interface Segregation (ISP) | Interfaces pequeñas y específicas, no monolíticas |
-| Dependency Inversion (DIP) | Depender de abstracciones, no de implementaciones concretas |
-| Cohesión alta | Los métodos de una clase trabajan sobre los mismos datos |
-| Acoplamiento bajo | Las clases conocen lo mínimo posible de otras |
+| Single Responsibility (SRP) | One class = one reason to change |
+| Open/Closed (OCP) | Open for extension, closed for modification |
+| Liskov Substitution (LSP) | Subclasses must be able to replace their superclasses |
+| Interface Segregation (ISP) | Small, specific interfaces, not monolithic ones |
+| Dependency Inversion (DIP) | Depend on abstractions, not concrete implementations |
+| High cohesion | A class's methods operate on the same data |
+| Low coupling | Classes know as little as possible about each other |
 
-### Comentarios
+### Comments
 
-| Regla | Descripción |
+| Rule | Description |
 |---|---|
-| El código se explica solo | Renombra en lugar de comentar qué hace algo |
-| Comentarios = POR QUÉ | Reservar comentarios para decisiones no obvias, trade-offs, o contexto de negocio |
-| Sin comentarios de traducción | `i++; // incrementa i` es ruido |
-| Sin código comentado | Eliminarlo; el control de versiones lo guarda |
-| Documentar APIs públicas | Sí documentar parámetros, retornos y excepciones de APIs |
+| Code explains itself | Rename instead of commenting what something does |
+| Comments = WHY | Reserve comments for non-obvious decisions, trade-offs, or business context |
+| No translation comments | `i++; // increment i` is noise |
+| No commented-out code | Delete it; version control keeps it |
+| Document public APIs | Do document parameters, return values, and exceptions of APIs |
 
-### Estructura y Formato
+### Structure and Formatting
 
-| Regla | Descripción |
+| Rule | Description |
 |---|---|
-| DRY (Don't Repeat Yourself) | Extraer cualquier lógica duplicada |
-| KISS (Keep It Simple) | La solución más simple que funcione correctamente |
-| YAGNI (You Aren't Gonna Need It) | No implementar funcionalidad anticipada sin requerimiento real |
-| Separación de concerns | UI, lógica de negocio, acceso a datos en capas distintas |
-| Ley de Demeter | Un objeto solo habla con sus amigos directos |
+| DRY (Don't Repeat Yourself) | Extract any duplicated logic |
+| KISS (Keep It Simple) | The simplest solution that works correctly |
+| YAGNI (You Aren't Gonna Need It) | Don't implement anticipated functionality without a real requirement |
+| Separation of concerns | UI, business logic, and data access in separate layers |
+| Law of Demeter | An object only talks to its immediate friends |
 
 ---
 
-## Plantilla de Explicación
+## Explanation Template
 
-Usa esta estructura después de cada fragmento de código:
+Use this structure after each code fragment:
 
 ```
-### Principios aplicados
+### Applied Principles
 
-**1. [Nombre del Principio]**
-> [Definición en una oración]
+**1. [Principle Name]**
+> [One-sentence definition]
 
-Aplicado en: `nombreFuncion()` / `ClaseX` / línea N
-→ [Explicación específica de cómo se aplicó y por qué mejora el código]
+Applied in: `functionName()` / `ClassX` / line N
+→ [Specific explanation of how it was applied and why it improves the code]
 
-**2. [Nombre del Principio]**
+**2. [Principle Name]**
 ...
 ```
 
-Incluye entre 3 y 8 principios. Prioriza los más visibles e importantes en el código generado.
-Si se aplican varios principios en el mismo lugar, agrúpalos.
+Include between 3 and 8 principles. Prioritize the most visible and important ones in the generated code.
+If several principles apply in the same place, group them.
 
 ---
 
-## Ejemplo de Output Esperado
+## Expected Output Example
 
-**Prompt del usuario:** "Escríbeme una función que valide un email"
+**User prompt:** "Write me a function that validates an email"
 
 **Output:**
 
@@ -165,65 +167,65 @@ EMAIL_PATTERN = re.compile(
 
 def is_valid_email(email: str) -> bool:
     """
-    Verifica si una cadena tiene formato de email válido (RFC 5322 simplificado).
-    No verifica existencia del dominio ni del buzón.
+    Checks whether a string has a valid email format (simplified RFC 5322).
+    Does not verify that the domain or mailbox exists.
     """
     if not email or not isinstance(email, str):
         return False
     return bool(EMAIL_PATTERN.match(email.strip()))
 ```
 
-### Principios aplicados
+### Applied Principles
 
-**1. Nombres que revelan intención**
-> El nombre debe responder qué hace, para qué sirve y cómo se usa.
+**1. Intention-revealing names**
+> The name must answer what it does, what it is for, and how it is used.
 
-Aplicado en: `is_valid_email(email)`
-→ El prefijo `is_` indica que retorna un booleano. El parámetro `email` es auto-descriptivo.
-  No se usó `validate()`, `check()` o `emailFunc()`.
+Applied in: `is_valid_email(email)`
+→ The `is_` prefix signals a boolean return. The `email` parameter is self-descriptive.
+  `validate()`, `check()`, or `emailFunc()` were avoided.
 
-**2. Constante nombrada en lugar de valor mágico**
-> Las constantes mágicas ocultan la intención del código.
+**2. Named constant instead of a magic value**
+> Magic constants hide the code's intent.
 
-Aplicado en: `EMAIL_PATTERN`
-→ La expresión regular se extrae a una constante con nombre descriptivo y se compila
-  una sola vez a nivel de módulo (eficiencia), en lugar de recompilarla en cada llamada.
+Applied in: `EMAIL_PATTERN`
+→ The regular expression is extracted into a descriptively named constant and compiled
+  once at module level (efficiency), instead of being recompiled on every call.
 
-**3. Guard Clause (retorno temprano)**
-> Validar condiciones de error al inicio y salir, antes de la lógica principal.
+**3. Guard Clause (early return)**
+> Validate error conditions up front and exit before the main logic.
 
-Aplicado en: el `if not email` inicial
-→ Maneja los casos borde (`None`, cadena vacía, tipo incorrecto) de forma explícita
-  y temprana, haciendo el flujo feliz más legible.
+Applied in: the initial `if not email`
+→ Handles edge cases (`None`, empty string, wrong type) explicitly and early,
+  making the happy path more readable.
 
-**4. Una sola responsabilidad**
-> La función hace exactamente una cosa.
+**4. Single responsibility**
+> The function does exactly one thing.
 
-Aplicado en: toda la función
-→ Solo valida formato. No normaliza, no busca en base de datos, no envía correos.
-  Si se necesitara normalizar, sería una función separada `normalize_email()`.
+Applied in: the whole function
+→ It only validates format. It doesn't normalize, query a database, or send emails.
+  If normalization were needed, it would be a separate `normalize_email()` function.
 
-**5. Comentario de "por qué" en lugar de "qué"**
-> Los comentarios explican decisiones, no traducen código.
+**5. "Why" comment instead of "what"**
+> Comments explain decisions, they don't translate code.
 
-Aplicado en: el docstring
-→ Aclara el alcance de la validación (formato, no existencia) — información que
-  no se puede inferir del código, y que evita mal uso de la función.
+Applied in: the docstring
+→ Clarifies the validation scope (format, not existence) — information that
+  can't be inferred from the code and that prevents misuse of the function.
 
 ---
 
-## Notas Adicionales
+## Additional Notes
 
-- Si el usuario pide código en un lenguaje específico, úsalo. Si no especifica,
-  elige el más apropiado y menciónalo brevemente antes de generar.
-- Adapta el estilo al idioma del lenguaje: snake_case en Python, camelCase en JS, etc.
-- Para código más largo (> 50 líneas), organiza la explicación por secciones del código.
-- Si hay trade-offs relevantes (rendimiento vs legibilidad, simplicidad vs flexibilidad),
-  menciónalos explícitamente al final bajo "Trade-offs considerados".
+- If the user requests a specific language, use it. If not specified,
+  choose the most appropriate one and briefly mention it before generating.
+- Adapt the style to the language's idioms: snake_case in Python, camelCase in JS, etc.
+- For longer code (> 50 lines), organize the explanation by code sections.
+- If there are relevant trade-offs (performance vs. readability, simplicity vs. flexibility),
+  mention them explicitly at the end under "Trade-offs Considered".
 
-## Integración con migrations
+## Integration with migrations
 
-Si el usuario pide migrar o portar código existente además de aplicar código limpio,
-**aplica también la skill `migrations`** para el proceso de traducción tecnológica.
-Esta skill se encarga de los principios de calidad; `migrations` se encarga del mapeo
-de equivalencias y la estructura del output de migración.
+If the user asks to migrate or port existing code in addition to applying clean code,
+**also apply the `migrations` skill** for the technology translation process.
+This skill handles quality principles; `migrations` handles equivalence mapping
+and the structure of the migration output.
