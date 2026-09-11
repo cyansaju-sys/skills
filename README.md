@@ -106,9 +106,10 @@ Reinicia la sesión de Claude Code para que detecte las skills y reglas nuevas.
 
 ```
 .
+├── LICENSE                 # licencia MIT
 ├── README.md
 ├── claude.md               # reglas de desarrollo para Claude
-├── setting.json            # configuración de Claude Code (vacía por ahora)
+├── setting.json            # configuración de Claude Code (permisos e idioma)
 └── skills/
     ├── browser-testing/
     │   └── SKILL.md
@@ -142,3 +143,9 @@ Reinicia la sesión de Claude Code para que detecte las skills y reglas nuevas.
 
 3. Agrégala a la tabla de [Skills disponibles](#skills-disponibles).
 4. Si usas enlaces simbólicos, vuelve a ejecutar el comando de instalación.
+
+## Licencia
+
+Distribuido bajo la [licencia MIT](LICENSE): puedes usar, copiar, modificar y distribuir
+este repositorio libremente, incluso con fines comerciales, siempre que conserves el aviso
+de copyright. Se ofrece "tal cual", sin garantías.
